@@ -10,7 +10,7 @@ def aristocrats(s):
     for lord in lords:
         print(lord)
         #do messages
-    r.send_message('jb567', 'A Division in the House of Lords', '''
+        r.send_message(lord, 'A Division in the House of Lords', '''
 My Noble Lord,
 
 There is a division bar in the House of Lords
@@ -23,7 +23,7 @@ def plebs(s):
     print('commons: ' + str(s.url))
     for mp in mps:
         print(mp)
-    r.send_message('jb567', 'A Division in the House of Commons', '''
+        r.send_message(mp, 'A Division in the House of Commons', '''
 My Honorable Friend,
 
 There is a division bar in the House of Commons
@@ -40,9 +40,7 @@ def check_lords(s, v):
         tbf.remove(v)
 
 def check_commons(s, v):
-    print('Stop Whining COmmons!')
-
-    
+    print('Stop Whining Commons!')
 
 r = praw.Reddit('Model House of Commons: Division Notifier - version 1')
 p = str(input('Password for blackrodbot: '))
@@ -62,26 +60,27 @@ with open('toBeCompleted.txt') as f:
     tbf = [x.strip('\n') for x in f.readlines()]
 
 #Start Loop here in production
+while True:
+    new = sub.get_new(limit=10)
 
-new = sub.get_new(limit=10)
-
-for submission in new:
-    if not str(submission.id) in lastSub:
-        if 'mhocmp' in submission.url.lower():
-            plebs(submission)
-        elif 'mholvote' in submission.url.lower():
-            aristocrats(submission)
-        lastSub.append(submission.id)
-        tbf.append(str(submission.id))
-        with open('sent.txt', 'r+') as f:
-            f.write("\n".join(lastSub))
+    for submission in new:
+        if not str(submission.id) in lastSub:
+            if 'mhocmp' in submission.url.lower():
+                plebs(submission)
+            elif 'mholvote' in submission.url.lower():
+                aristocrats(submission)
+            lastSub.append(submission.id)
+            tbf.append(str(submission.id))
+            with open('sent.txt', 'r+') as f:
+                f.write("\n".join(lastSub))
 
 
-for vote in tbf:
-    s = r.get_submission(submission_id=vote)
-    if 'mholvote' in s.url.lower():
-        check_lords(s, vote)
-    else:
-        check_commons(s, vote)
-with open('toBeCompleted.txt', 'r+') as f:
-    f.write("\n".join(tbf))
+    for vote in tbf:
+        s = r.get_submission(submission_id=vote)
+        if 'mholvote' in s.url.lower():
+            check_lords(s, vote)
+        else:
+            check_commons(s, vote)
+    with open('toBeCompleted.txt', 'r+') as f:
+        f.write("\n".join(tbf))
+    time.sleep(3600)
