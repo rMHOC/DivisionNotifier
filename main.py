@@ -45,9 +45,8 @@ def check_commons(s, v):
     
 
 r = praw.Reddit('Model House of Commons: Division Notifier - version 1')
-u = str(input('Reddit Username: '))
-p = str(input('Password: '))
-r.login(u,p)
+p = str(input('Password for blackrodbot: '))
+r.login("blackrodbot",p)
 sub = r.get_subreddit('mhocmp+mholvote')
 #GET MP AND LORD LIST:
 with open('lords.txt') as f:
