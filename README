@@ -1,0 +1,10 @@
+#Division Notifier
+
+__A script to notify users when a new post is in the MHoCMP and MHoLVote
+Subreddits.__
+
+To Install:
+
+- Install Python 3.5.x
+- Install PRAW
+- Run this all the time
