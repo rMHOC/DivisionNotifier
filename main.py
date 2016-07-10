@@ -10,7 +10,8 @@ def aristocrats(s):
     for lord in lords:
         print(lord)
         #do messages
-        r.send_message(lord, 'A Division in the House of Lords', '''
+        try:
+            r.send_message(lord, 'A Division in the House of Lords', '''
 My Noble Lord,
 
 There is a division bar in the House of Lords
@@ -18,6 +19,8 @@ There is a division bar in the House of Lords
 [here](''' + s.url + ''')
 
 *-The Gentleman Usher of the Black Rod*''')
+        except:
+            pass
 
 def plebs(s):
     print('commons: ' + str(s.url))
@@ -34,10 +37,6 @@ There is a division bar in the House of Commons
 #do messages
 #}}
 #{{CHECK TIME ELAPSED
-def check_lords(s, v):
-    if (datetime.timestamp(datetime.now()) -  int(s.created_utc))  > 172800:
-        r.send_message('/r/jb567', 'Division Ended', s.url)
-        tbf.remove(v)
 
 def check_commons(s, v):
     print('Stop Whining Commons!')
@@ -56,12 +55,13 @@ with open('mps.txt') as f:
 with open('sent.txt') as f:
     lastSub = [x.strip('\n') for x in f.readlines()]
 
-with open('toBeCompleted.txt') as f:
-    tbf = [x.strip('\n') for x in f.readlines()]
 
 #Start Loop here in production
 while True:
-    new = sub.get_new(limit=10)
+    try:
+        new = sub.get_new(limit=10)
+    except:
+        new = {}
 
     for submission in new:
         if not str(submission.id) in lastSub:
@@ -70,17 +70,6 @@ while True:
             elif 'mholvote' in submission.url.lower():
                 aristocrats(submission)
             lastSub.append(submission.id)
-            tbf.append(str(submission.id))
             with open('sent.txt', 'r+') as f:
                 f.write("\n".join(lastSub))
-
-
-    for vote in tbf:
-        s = r.get_submission(submission_id=vote)
-        if 'mholvote' in s.url.lower():
-            check_lords(s, vote)
-        else:
-            check_commons(s, vote)
-    with open('toBeCompleted.txt', 'r+') as f:
-        f.write("\n".join(tbf))
     time.sleep(3600)
